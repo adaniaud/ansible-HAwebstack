@@ -1,0 +1,17 @@
+---
+# replace these
+
+AUTH_KEY: GBh0ys3nKjnknEz7bSJPQIbClx0bvIWR
+SECURE_AUTH_KEY: FnsSygQlST1tLMqx8yV60St3wb2gY4nI
+LOGGED_IN_KEY: uwGULMm5VGiqZ7t6dUFzm8hpLnQIZOUr
+NONCE_KEY: 4RYauoaQaNZFvnTUYL9uyZRI5jUsXU6b
+AUTH_SALT: 3Ue63ApZGLk3zu3ClzNFsNkXf4i8Xin6
+SECURE_AUTH_SALT: FabPP2BWH0udb8KanpMoJEs3o1HSC3iV
+LOGGED_IN_SALT: RJPZDwVHH7zTfndGLKG8D9UZTntqSb3L
+NONCE_SALT: 77pvaSLKF8uUj6mZvO0NQIXWjU6gK6EG
+
+wp_domain: WP web app
+wp_adminuser: wpadmin
+wp_adminemail: root@domain.tld
+wp_admin_password: wpadmin
+

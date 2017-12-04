@@ -1,0 +1,56 @@
+---
+
+- name: Install Graylog repo
+  apt:
+    deb: https://packages.graylog2.org/repo/packages/graylog-2.3-repository_latest.deb
+    update_cache: yes
+
+- name: Install jdk8
+  apt:
+    name: openjdk-8-jre-headless
+    state: present
+    default_release: jessie-backports
+
+- name: Install requirements
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - uuid-runtime
+    - pwgen
+    - mongodb-server
+
+- name: Install Elasticsearch (add repository key)
+  shell: wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+
+- name: Add Elasticksearch repo
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    state: present
+    filename: 'elastic-5.X.list'
+    update_cache: yes
+
+- name: Install Elasticsearch (install package)
+  apt: name="elasticsearch" state=present
+
+- name: Configure Elaticsearch
+  template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+
+- name: Start Elasticsearch
+  service: name=elasticsearch state=started enabled=yes
+
+- name: Install Graylog
+  apt: name="graylog-server" state=present
+
+- name: Configure Graylog
+  template: src=server.conf.j2 dest=/etc/graylog/server/server.conf
+
+- name: Configure nginx for Greylog
+  template: src=default.j2 dest=/etc/nginx/sites-enabled/default
+
+- name: Start Graylog
+  service: name=graylog-server state=started enabled=yes
+
+- name: Reload Nginx
+  service: name=nginx state=reloaded

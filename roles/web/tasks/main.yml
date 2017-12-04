@@ -1,0 +1,42 @@
+---
+
+- name: Get WordPress source
+  shell: wget https://wordpress.org/latest.tar.gz && tar xzvf latest.tar.gz --directory /var/www/html
+
+- name: Install PHP5
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php5-mysql
+    - php5-fpm
+    - curl
+
+- name: include database vars in order to configure WP database
+  include_vars: 
+    file: ../../../group_vars/database
+
+- name: Configure WordPress
+  template: src=wp-config.php.j2 dest=/var/www/html/wordpress/wp-config.php
+
+- name: Configure PHP to disable cgi.fix_pathinfo
+  copy: src=../files/php.ini dest=/etc/php5/fpm/php.ini
+
+- name: Restart php5-fpm
+  service: name=php5-fpm state=restarted
+
+- name: Modify default website for WordPress
+  template: src=default.j2 dest=/etc/nginx/sites-enabled/default
+
+- name: Reload nginx
+  service: name=nginx state=reloaded
+
+- name: Finalize WordPress installation
+  shell: |
+    curl "http://{{ ansible_eth0.ipv4.address }}/wp-admin/install.php?step=2" \
+    --data-urlencode "weblog_title={{ wp_domain }}"\
+    --data-urlencode "user_name={{  wp_adminuser }}" \
+    --data-urlencode "admin_email={{ wp_adminemail }}" \
+    --data-urlencode "admin_password={{ wp_admin_password }}" \
+    --data-urlencode "admin_password2={{ wp_admin_password }}" \
+    --data-urlencode "pw_weak=1v"

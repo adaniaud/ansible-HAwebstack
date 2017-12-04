@@ -1,0 +1,14 @@
+input(type="imfile"
+      File="/var/log/nginx/error.log"
+      Tag="nginx-error"
+)
+
+if $programname == 'nginx-error' then {
+    action(
+        type="omfwd"
+        Target="{{ hostvars['logserver']['ansible_eth0']['ipv4']['address'] }}"
+        Port="12302"
+        Protocol="udp"
+    )
+    stop
+}

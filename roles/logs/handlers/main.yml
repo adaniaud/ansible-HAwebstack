@@ -1,0 +1,13 @@
+---
+
+- name: reload elasticsearch
+  service: name=elasticsearch state=reloaded
+
+- name: restart elasticsearch
+  service: name=elasticsearch state=restarted
+
+- name: reload graylog-server
+  service: name=graylog-server state=reloaded
+
+- name: restart graylog-server
+  service: name=graylog-server state=restarted

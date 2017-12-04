@@ -1,0 +1,30 @@
+---
+
+- name: Add jessie-backports repo (for rsyslog 8.23)
+  apt_repository:
+    repo: 'deb http://httpredir.debian.org/debian jessie-backports main'
+    state: present
+
+- name: install ntp
+  apt: 
+    name: ntp
+    update_cache: yes
+
+- name: install rsyslog
+  apt:
+    name: rsyslog
+    state: latest
+    default_release: jessie-backports
+
+- name: Start the ntp service
+  service: name=ntp state=started enabled=yes
+
+- name: Configure rsyslog
+  template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
+
+- name: Configure rsyslog for Graylog
+  template: src=10-graylog.j2 dest=/etc/rsyslog.d/10-graylog.conf
+
+- name: Restart the rsyslog service
+  service: name=rsyslog state=restarted
+

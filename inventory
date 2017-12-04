@@ -1,0 +1,15 @@
+[web]
+webserver1
+webserver2
+
+[database]
+dbserver
+
+[loadbalancer]
+lbserver
+
+[monitoring]
+monitor
+
+[logs]
+logserver

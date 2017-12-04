@@ -1,0 +1,14 @@
+input(type="imfile"
+      File="/var/log/nginx/access.log"
+      Tag="nginx-access"
+)
+
+if $programname == 'nginx-access' then {
+    action(
+        type="omfwd"
+        Target="{{ hostvars['logserver']['ansible_eth0']['ipv4']['address'] }}"
+        Port="12301"
+        Protocol="udp"
+    )
+    stop
+}

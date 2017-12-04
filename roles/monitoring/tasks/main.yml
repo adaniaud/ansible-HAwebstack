@@ -1,0 +1,25 @@
+---
+
+- name: install curl
+  apt: name="{{ item }}" state=present
+  with_items:
+    - curl
+    - git
+
+- name: install netdata requirements
+  shell: curl -Ss 'https://raw.githubusercontent.com/firehol/netdata-demo-site/master/install-required-packages.sh' >/tmp/kickstart.sh && bash /tmp/kickstart.sh -i netdata-all --dont-wait --non-interactive
+
+- name: get netdata
+  git:
+    repo: https://github.com/firehol/netdata.git
+    depth: 1
+    dest: /tmp/netdata
+
+# run script with root privileges to build, install, start netdata
+- name: install netdata
+  command: /tmp/netdata/netdata-installer.sh --dont-wait
+  args:
+    chdir: /tmp/netdata/
+
+- name: copy netdata conf
+  template: src=netdata.conf dest=/etc/netdata/netdata.conf

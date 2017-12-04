@@ -1,0 +1,18 @@
+---
+
+- name: install HA proxy
+  apt:
+    name: haproxy
+    state: present
+
+- name: HA proxy configuration file
+  template: src=05-haproxy.conf.j2 dest=/etc/rsyslog.d/05-haproxy.conf
+
+- name: restart rsyslog
+  service: name=rsyslog state=restarted
+
+- name: HA proxy configuration file
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+
+- name: start HA proxy
+  service: name=haproxy state=restarted enabled=yes

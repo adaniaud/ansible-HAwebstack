@@ -1,0 +1,6 @@
+---
+
+dbname: wordpressdb
+dbuser: sql
+userpass: sqlpass
+mysql_root_password: supersecurepassword

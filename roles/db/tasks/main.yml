@@ -1,0 +1,50 @@
+---
+
+- name: Install MariaDB
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - mariadb-server
+  - mariadb-client
+  - python-mysqldb
+
+- name: Change mysql configuration file
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+
+- name: Start MariaDB
+  service: name=mysql state=restarted enabled=yes
+
+- name: Remove anonymous users
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User=''
+  changed_when: False
+  ignore_errors: yes
+
+- name: Create db
+  mysql_db:
+    name: "{{ dbname }}"
+    state: present
+  ignore_errors: yes
+
+- name: Create db user
+  mysql_user: name={{ dbuser }} password={{ userpass }} priv={{ dbname }}.*:ALL host='%' state=present
+  ignore_errors: yes
+
+#Secure root account //https://github.com/PCextreme/ansible-role-mariadb/blob/master/tasks/mysql_secure_installation.yml
+- name: Set root Password
+  mysql_user: name=root host=localhost password={{ mysql_root_password }} state=present
+  ignore_errors: yes
+
+- name: Disallow root login remotely
+  command: 'mysql -u root -p"{{ mysql_root_password }}" -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: False
+
+- name: Reload privilege tables
+  command: 'mysql -u root -p"{{ mysql_root_password }}" -ne "{{ item }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  changed_when: False

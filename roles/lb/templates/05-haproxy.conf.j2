@@ -1,0 +1,14 @@
+input(type="imfile"
+      File="/var/log/haproxy.log"
+      Tag="haproxy"
+)
+
+if $programname == 'haproxy' then {
+    action(
+        type="omfwd"
+        Target="{{ hostvars['logserver']['ansible_eth0']['ipv4']['address'] }}"
+        Port="11002"
+        Protocol="udp"
+    )
+    stop
+}
